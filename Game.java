@@ -33,13 +33,26 @@ public class Game{
     if(Integer.parseInt(number) == 1){
       EnemyChar enemy1 = new EnemyChar();
       Pokemon charm = new Charmander();
-      while(true){
-        System.out.println(charm.getName() + " HP: " + charm.getCurrHp());
-        System.out.println(enemy1.getName() + " HP: " + enemy1.getCurrHp());
-        System.out.println("enter etk: ");
-        String atk = input.nextLine();
-        charm.atk(Integer.parseInt(atk), enemy1);
-        enemy1.atk(charm);
+      boolean game = true;
+      while(game){
+        if(checkAlive(charm, enemy1)){
+          if(enemy1.getCurrHp() <= 0){
+            System.out.println("YOU WIN");
+            game = false;
+          }
+          else{
+            System.out.println("YOU LOSE");
+            game = false;
+          }
+        }
+        else{
+          System.out.println(charm.getName() + " HP: " + charm.getCurrHp());
+          System.out.println(enemy1.getName() + " HP: " + enemy1.getCurrHp());
+          System.out.println("enter etk: ");
+          String atk = input.nextLine();
+          charm.atk(Integer.parseInt(atk), enemy1);
+          enemy1.atk(charm);
+        }
       }
     }
     //System.out.println(moves.getMove(73));
@@ -122,4 +135,17 @@ public class Game{
 
   }
 
+  public static boolean checkAlive(Pokemon you, Pokemon opp){
+    if(you.getCurrHp() <= 0){
+      System.out.println("Your " + you.getName() + " has fainted");
+      return true;     
+    }
+    else if(opp.getCurrHp() <= 0){
+      System.out.println("The opposing " + opp.getName() + " has fainted");
+      return true;   
+    }
+    else{
+      return false;
+    }
+  }
 }

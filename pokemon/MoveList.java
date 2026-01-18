@@ -2,7 +2,6 @@ package pokemon;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.classfile.instruction.SwitchCase;
 import java.util.Scanner;
 
 /*

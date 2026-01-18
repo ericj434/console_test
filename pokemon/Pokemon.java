@@ -18,13 +18,7 @@ public abstract class Pokemon{
     but we want to keep the base atk defense speed.
     tldr: mutable stats for game
     */
-    private double currSpeed = this.getSpeed();
-
-    private double currDefense = this.getDefense();
-
-    private double currAtk = this.getAtk();
-
-    private double currHp = this.getHp();
+    private double currSpeed, currDefense, currAtk, currHp;
 
     /*
     stages for debuffs, used to calculate the percentage of def, atk, speed etc after 
@@ -36,8 +30,11 @@ public abstract class Pokemon{
     //constructors
     public Pokemon(double initialHp, double initialSpeed, double initialDefense, double initialAtk, String name, String type){
         hp = initialHp;
+        currHp = initialHp;
         speed = initialSpeed;
+        currSpeed = initialSpeed;
         defense = initialDefense;
+        currDefense = initialDefense;
         atk = initialAtk;
         this.type = type;
         this.name = name;
