@@ -1,5 +1,5 @@
 package pokemon;
-public abstract class Pokemon{
+public abstract class Pokemon implements Cloneable{
     /*
     keeps track of all the levels and exp;
     */
@@ -40,7 +40,11 @@ public abstract class Pokemon{
         this.name = name;
     }
     
-
+    //initiating cloning, used for testing in game for displayMoves()
+    @Override
+    public Object clone() throws CloneNotSupportedException{
+        return super.clone();
+    }
     //getters and setters
     
     //hp getters and setters
@@ -185,6 +189,8 @@ public abstract class Pokemon{
         stageAtk = newStageAtk;
         return stageAtk;
     }
+
+    
     /*
     simple toString method to return lvl and name 
     */
@@ -201,13 +207,22 @@ public abstract class Pokemon{
     }
 
     public int levelUp(int exp){
-        if(calculateExp(this.getLevel()) == this.exp){
+        if(exp == 0){
+            return 0;
+        }
+        else if(calculateExp(this.getLevel()) >= this.exp){
             level++;
-            exp = 0;
-            return level;
+            if(addMoves()){
+                System.out.println("Learned a new move!" );
+            }
+            
+            return 1 + levelUp(exp - calculateExp(this.getLevel()));
+
         }
         return -1;
     }
+
+    public abstract boolean addMoves();
     /* 
     critical calculations
     */
@@ -244,7 +259,7 @@ public abstract class Pokemon{
 
     }
     
-    public abstract void atk(int index, Pokemon other);
+    public abstract boolean atk(int index, Pokemon other);
 
     public abstract String makeNoise();
 

@@ -70,35 +70,47 @@ public class Charmander extends Pokemon{
     public void leer(Pokemon other){
       other.setCurrDefense(other.getCurrDefense() * 2 /(other.getStageDefense() + 2));
     }
-    public void atk(int index, Pokemon other){
+    public boolean atk(int index, Pokemon other){
         if(index == 0){
           growl(other);
+          currMoves[0].setPp(currMoves[0].getPp() - 1);
+          return true;
         }
         else if(index == 1){
           other.setCurrHp(other.getCurrHp() - scratch(other));
+          currMoves[1].setPp(currMoves[1].getPp() - 1);
+          return true;
         }
         else if(index == 2){
-          if(!currMoves[2].equals(null)){
+          if(!(currMoves[2] == null)){
             other.setCurrHp(other.getCurrHp() - ember(other));
+            currMoves[2].setPp(currMoves[2].getPp() - 1);
+            return true;
           }
+          return false;
         }
         else{
-          if(!currMoves[3].equals(null)){
+          if(!(currMoves[3] == null)){
             leer(other);
+            currMoves[3].setPp(currMoves[3].getPp() - 1);
+            return true;
           }
+          return false;
         }
     }
     /*
     new moves so cool, you get new moves when u reach the level req 
     */
-    public void addMoves(){
+    public boolean addMoves(){
       if(getLevel() == 9){
         currMoves[2] = this.getMoveList().getMove("Ember");
+        return true;
       }
       else if(getLevel() == 15){
-        currMoves[2] = this.getMoveList().getMove("Ember");
         currMoves[3] = this.getMoveList().getMove("Leer");
+        return true;
       }
+      return false;
     }
     //makes noises, pretty silly and funny when printed out
     @Override

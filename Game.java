@@ -6,7 +6,7 @@ import pokemon.*;
 public class Game{
   public static String[][] battle = new String[8][24]; 
   public static String[][] status = new String[2][72];
-  public static String[][] action = new String[8][24];
+  public static String[][] action = new String[4][24];
   
   public static final String RED_BOX = "\u001B[41m   \u001B[0m";
   public static final String GREEN_BOX = "\u001B[42m   \u001B[0m";
@@ -14,6 +14,7 @@ public class Game{
   public static final String BLACK_BOX = "\u001B[40m   \u001B[0m";
   public static final String WHITE_BOX = "\u001B[47m   \u001B[0m";
   public static final String DARK_GREEN_BOX = "\u001B[48;5;28m   \u001B[0m";
+  public static final String GREY_BOX = "\u001b[48;5;239m   \u001b[0m";
   
 
   public static int currWidth, currHeight;
@@ -52,17 +53,13 @@ public class Game{
         }
         else{
 
-          displayBattle();
-          System.out.println("\u001b[48;5;46m------------------------------------------------------------------------\u001b[0m");
-          displayName(enemy1, charm);
-          displayHp(charm, enemy1);
-          display(status);
-          
-          System.out.println(charm.getName() + " HP: " + charm.getCurrHp());
-          System.out.println(enemy1.getName() + " HP: " + enemy1.getCurrHp());
-          System.out.println("enter etk: ");
-          String atk = input.nextLine();
-          charm.atk(Integer.parseInt(atk), enemy1);
+
+          displayBattleScreen(charm, enemy1);
+
+
+          System.out.println("Select an action: ");
+          String num = input.nextLine();
+          charm.atk(Integer.parseInt(num), enemy1);
           enemy1.atk(charm);
           currHeight = 0;
           currWidth = 0;
@@ -73,9 +70,23 @@ public class Game{
       }
     }
     //System.out.println(moves.getMove(73));
-    System.out.print("\033[H\033[2J");
+    //System.out.print("\033[H\033[2J");
   }
 
+  /*
+  general display for all the 'display' functions 
+  */
+
+  public static void displayBattleScreen(Pokemon home, Pokemon away){
+    displayBattle();
+    System.out.println("\u001b[48;5;46m------------------------------------------------------------------------\u001b[0m");
+    displayName(home, away);
+    displayHp(home, away);
+    displayAction(home);
+          
+    display(status);
+    display(action);
+  }
 
   /*
   prints out the elements of all the possible "pixels" inside of any 2d array
@@ -198,6 +209,67 @@ public class Game{
   }
 
   /*
+  displays the actions that you can do in a pokemon batle (fight or run) 
+  */
+  public static void displayAction(Pokemon pokemon){
+   for(int i = 0; i < action[0].length; i++){
+    action[0][i] = GREY_BOX;
+   }
+   String fight = "| 1. FIGHT";
+   String run = "| 2. RUN";
+   for(int i = 0; i < fight.length(); i++){
+    action[1][i] = fight.substring(i, i + 1);
+   }
+   for(int i = 0; i < run.length(); i++){
+    action[2][i] = run.substring(i, i + 1);
+   }
+   for(int i = 0; i < action[0].length; i++){
+    action[3][i] = GREY_BOX;
+   }
+   for(int i = 0; i < action.length; i++){
+    for(int j = 0; j < action[i].length; j++){
+      if(action[i][j] == null){
+        action[i][j] = "";
+      }
+    }
+   }
+  }
+
+  /*
+  when the player enters 1 during the action menu, we display the possible moves 
+  */
+  public void displayMoves(Pokemon pokemon){
+    Pokemon clonePokemon = null;
+    try {
+      clonePokemon = (Pokemon) pokemon.clone();
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    Pokemon testingMoves = new Charmander();
+    if(clonePokemon.atk(0, testingMoves)){
+
+    }
+  }
+
+
+  /*
+  takes in the choices the player makes at the action menu of the battle 
+  */
+  public void act(String action){
+    if(action.equals("fight")){
+
+    }
+    else if(action.equals("run")){
+
+    }
+    else if(action.equals("back")){
+      
+    }
+    else{
+      System.out.println("Please enter a valid action");
+    }
+  }
+  /*
   this code is strictly used for the battle array
   which is 8x24 and seperates into 3 8x8 
   */
@@ -228,6 +300,9 @@ public class Game{
  
   }
   
+
+
+
   public static String letterToBlock(String letter){
     if(letter.equals("R")){
       return RED_BOX;
@@ -250,9 +325,6 @@ public class Game{
     return null;
   }
   
-  public static void update(){
-
-  }
 
   public static boolean checkAlive(Pokemon you, Pokemon opp){
     if(you.getCurrHp() <= 0){

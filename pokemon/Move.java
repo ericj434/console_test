@@ -41,6 +41,10 @@ public class Move {
         return pp;
     }
 
+    public int setPp(int newPp){
+        pp = newPp;
+        return pp;
+    }
     public String getDescription(){
         return description;
     }
