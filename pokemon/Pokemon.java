@@ -186,6 +186,13 @@ public abstract class Pokemon{
         return stageAtk;
     }
     /*
+    simple toString method to return lvl and name 
+    */
+
+    public String toString(){
+        return name + " LVL " + level;
+    }
+    /*
     exp things, level up, calculates exp based on the fast equation from
     bulbapedia (linked in readme).
     */
