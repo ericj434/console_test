@@ -27,23 +27,26 @@ public class Charmander extends Pokemon{
     LIST OF METHODS:
     1) atk(int index, Pokemon other): this method is used for calculating the attack of all the moves in currMoves
        atk() --> String (move name to print)
-    2) recieveDamage(int damage, String type): used to calculate type efficiency
-       recieveDamage(int damage, String type) --> int (real damage)
+    2) the skill based methods are used to do something to another pokemon, we made a lot of them
 
     */
-
     /*
-    this won't do the actual damage but only does the calculations, this is done for the
-    same reason as movetype (so that we can have a general function to recieve damage for those
-    calculations that are influenced by type and any other reasons)
+    restore pp for all current moves 
     */
-
+    public void restore(){
+      for(int i = 0; i < 4; i++){
+        if(currMoves[i] != null){
+          currMoves[i].setCurrPp(currMoves[i].getPp());
+        }
+      }
+    }
     /*
     GROWL: 
     Type: Normal Category: Status Power: -1 Accuracy: 100 PP: 40
     Lowers opponent's Attack.
     */
     public void growl(Pokemon other){
+        other.setStageAtk(other.getStageAtk() - 1);
         other.setCurrAtk(other.getCurrAtk() * 2 /(other.getStageAtk() + 2));
     }
     /*
@@ -70,25 +73,33 @@ public class Charmander extends Pokemon{
     public void leer(Pokemon other){
       other.setCurrDefense(other.getCurrDefense() * 2 /(other.getStageDefense() + 2));
     }
+    /*
+    heres the atk method, calls every other method to do damage
+    or supp sometimes to the other pokemons 
+    */
     public void atk(int index, Pokemon other){
         if(index == 0 && currMoves[0].getPp() > 0){
           growl(other);
-          currMoves[0].setPp(currMoves[0].getPp() - 1);
+          currMoves[0].setCurrPp(currMoves[0].getPp() - 1);
+          System.out.println(this.getName() + " used " + currMoves[0].getName() + "!" );
         }
         else if(index == 1 && currMoves[1].getPp() > 0){
           other.setCurrHp(other.getCurrHp() - scratch(other));
-          currMoves[1].setPp(currMoves[1].getPp() - 1);
+          currMoves[1].setCurrPp(currMoves[1].getPp() - 1);
+          System.out.println(this.getName() + " used " + currMoves[1].getName() + "!" );
         }
         else if(index == 2){
           if(!(currMoves[2] == null) && currMoves[2].getPp() > 0){
             other.setCurrHp(other.getCurrHp() - ember(other));
-            currMoves[2].setPp(currMoves[2].getPp() - 1);
+            currMoves[2].setCurrPp(currMoves[2].getPp() - 1);
+            System.out.println(this.getName() + " used " + currMoves[2].getName() + "!" );
           }
         }
         else if(index == 3){
           if(!(currMoves[3] == null) && currMoves[3].getPp() > 0){
             leer(other);
-            currMoves[3].setPp(currMoves[3].getPp() - 1);
+            currMoves[3].setCurrPp(currMoves[3].getPp() - 1);
+            System.out.println(this.getName() + " used " + currMoves[3].getName() + "!" );
           }
         }
         else{

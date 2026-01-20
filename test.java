@@ -1,5 +1,8 @@
-public interface test {
+import pokemon.*;
+
+public class test {
     public static void main(String[] args) {
-        System.out.println("\u001b[31m1");
+        MoveList newMoveList = new MoveList();
+        System.out.println(newMoveList.getMove("Water Gun"));
     }
 }

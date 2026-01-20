@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 import java.io.*;
 
@@ -5,7 +6,7 @@ import pokemon.*;
 
 public class Game{
   public static String[][] world = new String[16][24];
-  public static String[][] currWorld = world.clone(); 
+  public static String[][] currWorld = new String[16][24];
   public static String[][] battle = new String[8][24]; 
   public static String[][] status = new String[2][72];
   public static String[][] action = new String[4][24];
@@ -18,7 +19,9 @@ public class Game{
   public static final String DARK_GREEN_BOX = "\u001B[48;5;28m   \u001B[0m";
   public static final String GREY_BOX = "\u001b[48;5;239m   \u001b[0m";
   
-  public static boolean playerIn;
+  public static Pokemon starter = new Charmander();
+  public static boolean playerIn, mapIn, pickedPokemon;
+  public static boolean adventureMode = true;
   public static int pxcor, pycor;
   public static int currWidth, currHeight;
   public static boolean showMoves = false;
@@ -43,55 +46,167 @@ public class Game{
       Pokemon charm = new Charmander();
       boolean game = true;
       while(game){
-        /* battle stuff
-        EnemyChar enemy1 = new EnemyChar();
-        charm.heal();
-        battle(charm, enemy1);
-        */
-        importMap();
-        System.out.println(" __      __            .__       .___\r\n" + //
-                    "/  \\    /  \\___________|  |    __| _/\r\n" + //
-                    "\\   \\/\\/   /  _ \\_  __ \\  |   / __ | \r\n" + //
-                    " \\        (  <_> )  | \\/  |__/ /_/ | \r\n" + //
-                    "  \\__/\\  / \\____/|__|  |____/\\____ | \r\n" + //
-                    "       \\/                         \\/ ");
-        System.out.println("------------------------------------------------------------------------");
-        if(!playerIn){
-          spawnPlayer();
-          playerIn = true;
+        starterMenu();
+        currHeight = 0;
+        currWidth = 0;
+        if(adventureMode){
+          System.out.print("\033[H\033[2J");
+          worldCreation();
         }
-        display(currWorld); 
-        System.out.println("Enter: ");
-        String move = input.nextLine();
-        movePlayer(move);
-        System.out.print("\033[H\033[2J");
-        
       }
     }
     //System.out.println(moves.getMove(73));
     //System.out.print("\033[H\033[2J");
   }
-
+  /*
+  pick yo starter 
+  */
+  public static void starterMenu(){
+    while(!pickedPokemon){
+      Scanner input = new Scanner(System.in);
+      System.out.println("PICK YOUR STARTER! (1, 2, 3)");
+      enterIntoArray(new File("./imgs/charmander.txt"));
+      enterIntoArray(new File("./imgs/squirtle.txt"));
+      enterIntoArray(new File("./imgs/bulbasaur.txt"));
+      display(battle);
+      String ans = input.nextLine();
+      if(Integer.parseInt(ans) == 1){
+        starter = new Charmander();
+        pickedPokemon = true;
+      }
+      else if(Integer.parseInt(ans) == 2){
+        starter = new Squirtle();
+        pickedPokemon = true;
+      }
+      else if(Integer.parseInt(ans) == 3){
+        starter = new Bulbasaur();
+        pickedPokemon = true;
+      }
+      else{
+        currHeight = 0;
+        currWidth = 0;
+        System.out.print("\033[H\033[2J");
+        System.out.println("Please pick a valid pokemon");
+      }
+    }
+  }
+  /*
+  map stuff 
+  */
+  public static void worldCreation(){
+    Scanner input = new Scanner(System.in);
+    while(true){
+      if(!mapIn){
+        importMap(world);
+        importMap(currWorld);
+        mapIn = true;
+      }
+          
+      System.out.println(" __      __            .__       .___\r\n" + //
+                  "/  \\    /  \\___________|  |    __| _/\r\n" + //
+                  "\\   \\/\\/   /  _ \\_  __ \\  |   / __ | \r\n" + //
+                  " \\        (  <_> )  | \\/  |__/ /_/ | \r\n" + //
+                  "  \\__/\\  / \\____/|__|  |____/\\____ | \r\n" + //
+                  "       \\/                         \\/ ");
+      System.out.println("------------------------------------------------------------------------");
+      if(!playerIn){
+        spawnPlayer();
+        playerIn = true;
+      }
+      display(currWorld);
+      checkBlue();
+      checkRed();
+      System.out.println("Enter (w: up, a: left, s: down, d: right): ");
+      String move = input.nextLine();
+      System.out.print("\033[H\033[2J");
+      movePlayer(move);
+    }
+  }
+  /*
+  checks to see if you are on the blue square for healing 
+  */
+  public static void checkBlue(){
+    if(world[pycor][pxcor].equals(BLUE_BOX))
+      starter.heal();
+  }
+  /* 
+  red for restoring pp to moves
+  */
+  public static void checkRed(){
+    if(world[pycor][pxcor].equals(RED_BOX)){
+      starter.restore();
+    }
+  }
+  /*
+  random encounter 
+  */
+  public static void randEncounter(){
+    int key = (int) (Math.random() * 101);
+    int whichOne = (int) (Math.random() * 4);
+    Enemy opp;
+    if(whichOne == 1){
+      opp = new EnemyChar();
+    }
+    else if(whichOne == 1){
+      opp = new EnemyBulb();
+    }
+    else{
+      opp = new EnemyBulb();
+    }
+    if(key > 70){
+      battle(starter, opp);
+    }
+  }
   /*
   moves the player 
   */
   public static void movePlayer(String dir){
-    if(dir.equals("1")){
-      if(currWorld[pycor - 1][pxcor] != null || !currWorld[pycor - 1][pxcor].equals(GREY_BOX)){
+    if(dir.equals("w")){
+      if(!(pycor - 1 < 0) && !currWorld[pycor - 1][pxcor].equals(GREY_BOX)){
         currWorld[pycor][pxcor] = world[pycor][pxcor];
-        currWorld[pycor - 1][pxcor] = RED_BOX;
+        currWorld[pycor - 1][pxcor] = WHITE_BOX;
         pycor--;
-        System.out.println("sup");
+        randEncounter();
       }
       else{
         System.out.println("You can't go up!");
       }
     }
     else if(dir.equals("a")){
-
+      if(!(pxcor - 1 < 0) && !currWorld[pycor][pxcor - 1].equals(GREY_BOX)){
+        currWorld[pycor][pxcor] = world[pycor][pxcor];
+        currWorld[pycor][pxcor - 1] = WHITE_BOX;
+        pxcor--;
+        randEncounter();
+      }
+      else{
+        System.out.println("You can't go left!");
+      }
+    }
+    else if(dir.equals("s")){
+      if(!(pycor + 1 > 15) && !currWorld[pycor + 1][pxcor].equals(GREY_BOX)){
+        currWorld[pycor][pxcor] = world[pycor][pxcor];
+        currWorld[pycor + 1][pxcor] = WHITE_BOX;
+        pycor++;
+        randEncounter();
+      }
+      else{
+        System.out.println("You can't go down!");
+      }
+    }
+    else if(dir.equals("d")){
+      if(!(pxcor + 1 > 23) && !currWorld[pycor][pxcor + 1].equals(GREY_BOX)){
+        currWorld[pycor][pxcor] = world[pycor][pxcor];
+        currWorld[pycor][pxcor + 1] = WHITE_BOX;
+        pxcor++;
+        randEncounter();
+      }
+      else{
+        System.out.println("You can't go left!");
+      }
     }
     else{
-      System.out.println("WOTNNTNTNTNN");
+      System.out.println("Invalid movement!");
     }
   }
 
@@ -99,14 +214,14 @@ public class Game{
   spawns the player 
   */
   public static void spawnPlayer(){
-    currWorld[8][12] = RED_BOX;
+    currWorld[8][12] = WHITE_BOX;
     pxcor = 12;
     pycor = 8;
   }
   /*
   importing mapppppp 
   */
-  public static void importMap(){
+  public static void importMap(String[][] arr){
     File mapFile = new File("./imgs/map.txt");
     int currRow = 0;
     try{
@@ -114,8 +229,8 @@ public class Game{
       while(scansMap.hasNextLine()){
         String line = scansMap.nextLine();
         String[] lineSplit = line.split(" ");
-        for(int i = 0; i < world[currRow].length; i++){
-          world[currRow][i] = letterToBlock(lineSplit[i]);
+        for(int i = 0; i < arr[currRow].length; i++){
+          arr[currRow][i] = letterToBlock(lineSplit[i]);
         }
         currRow++;
       }
@@ -139,14 +254,32 @@ public class Game{
   */
   public static void battle(Pokemon you, Enemy enemy){
     Scanner input = new Scanner(System.in);
-    while(!checkAlive(you, (Pokemon) enemy)){
-          
-      displayBattleScreen(you, (Pokemon) enemy);
+    adventureMode = false;
+    Pokemon enemyPokemon = (Pokemon) enemy;
+    while(!checkAlive(you, enemyPokemon)){
+      System.out.print("\033[H\033[2J");
+      displayBattleScreen(you, enemy);
+      if(adventureMode == true){
+        System.out.print("\033[H\033[2J");
+        currHeight = 0;
+        currWidth = 0;
+        break;
+      }
       if(showMoves){
-        System.out.println("Input the move (number): ");
+        System.out.println("Input the move (number) (type \"back\" to go back): ");
         String move = input.nextLine();
-        you.atk(Integer.parseInt(move) - 1, (Pokemon) enemy);
-        enemy.atk(you);
+        try{
+          if(you.getSpeed() > enemyPokemon.getSpeed()){
+            you.atk(Integer.parseInt(move) - 1, enemyPokemon);
+            enemy.atk(you);
+          }
+          else{
+            enemy.atk(you);
+            you.atk(Integer.parseInt(move) - 1, enemyPokemon);
+          }
+        }catch(NumberFormatException e){
+          act(move, enemyPokemon);
+        }
       }
       else{
         System.out.println("Enter the word of your action (all lowercase): ");
@@ -157,19 +290,21 @@ public class Game{
       currHeight = 0;
       currWidth = 0;
       status = new String[2][72];
-      System.out.print("\033[H\033[2J");
+      //System.out.print("\033[H\033[2J");
     }
+    showMoves = false;
+    adventureMode = true;
   }
 
   /*
   general display for all the 'display' functions 
   */
 
-  public static void displayBattleScreen(Pokemon home, Pokemon away){
-    displayBattle();
+  public static void displayBattleScreen(Pokemon home, Enemy away){
+    displayBattle(away);
     System.out.println("\u001b[48;5;46m------------------------------------------------------------------------\u001b[0m");
-    displayName(home, away);
-    displayHp(home, away);
+    displayName(home,(Pokemon) away);
+    displayHp(home, (Pokemon) away);
     if(!showMoves)
       displayAction(home);
     else
@@ -197,10 +332,10 @@ public class Game{
   code used to display the image of the pokemon and also the vs symbol inbetween
   two pokemonss 
   */
-  public static void displayBattle(){
-    displayImage("charmander");
+  public static void displayBattle(Enemy opp){
+    displayImage(starter.getName());
     enterIntoArray(new File("./imgs/VS.txt"));
-    displayImage("charmander");
+    displayImage(opp.getName());
     display(battle);
   }
   /*
@@ -377,15 +512,33 @@ public class Game{
   /*
   takes in the choices the player makes at the action menu of the battle 
   */
-  public static void act(String action, Pokemon pokemon){
+  public static void act(String action, Pokemon other){
     if(action.equals("fight")){
-      displayMoves(pokemon);
+      displayMoves(starter);
     }
     else if(action.equals("run")){
-
+      int key = (int) (Math.random() * 101);
+      int target = (int) (starter.getSpeed() / other.getSpeed());
+      if(starter.getSpeed() > other.getSpeed()){
+        showMoves = false;
+        adventureMode = true;
+        System.out.println("You escaped!");
+      }
+      else{
+        int chance = (((int) (starter.getSpeed() * 128 / other.getSpeed()) + 30) % 256) * 100;
+        if(key < chance){
+          showMoves = false;
+          adventureMode = true;
+          System.out.println("You escaped!");
+        }
+        else{
+          System.out.println("You failed to escape!");
+        }
+      }
     }
     else if(action.equals("back")){
-      
+      showMoves = false;
+      displayAction(starter);
     }
     else{
       System.out.println("Please enter a valid action");
@@ -473,6 +626,6 @@ public class Game{
   */
   public static void gainExp(Pokemon home){
     //home.setExp(home.getExp() + home.getLevel() * 5);
-    home.setExp(home.getExp() + 10000);
+    home.setExp(home.getExp() + home.getLevel() * 5);
   }
 }

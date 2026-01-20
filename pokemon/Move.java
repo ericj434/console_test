@@ -3,6 +3,7 @@ public class Move {
     //attributes
     private String type, name, category;
     private int pp, power, accuracy;
+    private int currPp, currPower, currAccuracy;
     private String description;
 
     //constructors
@@ -11,8 +12,11 @@ public class Move {
         this.type = type;
         this.category = category;
         this.power = power;
+        currPower = power;
         this.accuracy = accuracy;
+        currAccuracy = accuracy;
         this.pp = pp;
+        currPp = pp;
         this.description = description;
     }
 
@@ -41,9 +45,9 @@ public class Move {
         return pp;
     }
 
-    public int setPp(int newPp){
-        pp = newPp;
-        return pp;
+    public int setCurrPp(int newCurrPp){
+        currPp = newCurrPp;
+        return currPp;
     }
     public String getDescription(){
         return description;

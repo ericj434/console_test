@@ -7,9 +7,9 @@ G G gr gr gr G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G b b 
 G G G G G G G G G G G G G G G G G G G G G G b b 
 G G G G G G G G G G G G G G G G G G G G G G G G 
-G G G G G G G G G G G G G G G G G G G G G gr gr gr 
-G G G G G G G G G G G G G G G G G G G G G gr gr gr 
-G G G G G G G G G G G G G G G G G G G G G G G G 
+R R G G G G G G G G G G G G G G G G G G G gr gr gr 
+R R G G G G G G G G G G G G G G G G G G G gr gr gr 
+R R G G G G G G G G G G G G G G G G G G G G G G 
 G G gr gr gr gr gr G G G G G G G G G G G G G G G G G 
 G G gr gr gr gr gr G G G G G G G G G G G G G G G G G 
 G G G G G G G G G G G G G G G G G G G G G G gr gr 
