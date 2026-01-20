@@ -1,6 +1,6 @@
 package pokemon;
 
-public class EnemyChar extends Charmander{
+public class EnemyChar extends Charmander implements Enemy{
     public EnemyChar(){
         
     }

@@ -203,26 +203,27 @@ public abstract class Pokemon implements Cloneable{
     bulbapedia (linked in readme).
     */
     public int calculateExp(int level){
-        return (int) (4 * Math.pow(level, 3) / 5);
+        //return (int) (4 * Math.pow(level, 3) / 5);
+        return 10;
     }
 
     public int levelUp(int exp){
-        if(exp == 0){
+        if(exp == 0 || this.getLevel() == 20){
             return 0;
         }
-        else if(calculateExp(this.getLevel()) >= this.exp){
+        else if(calculateExp(this.getLevel()) <= this.exp){
             level++;
             if(addMoves()){
                 System.out.println("Learned a new move!" );
             }
             
-            return 1 + levelUp(exp - calculateExp(this.getLevel()));
+            return 1 + levelUp(exp - calculateExp(this.getLevel() - 1));
 
         }
         return -1;
     }
 
-    public abstract boolean addMoves();
+    
     /* 
     critical calculations
     */
@@ -258,8 +259,19 @@ public abstract class Pokemon implements Cloneable{
         return damage;
 
     }
-    
-    public abstract boolean atk(int index, Pokemon other);
+
+    /*
+    heals at teh start of all battle (RESET HP) 
+    */
+    public void heal(){
+        this.setCurrHp(this.getHp());
+    }
+
+    public abstract boolean addMoves();
+
+    public abstract String displayMove(int index);
+
+    public abstract void atk(int index, Pokemon other);
 
     public abstract String makeNoise();
 

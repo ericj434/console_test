@@ -18,7 +18,7 @@ public class Game{
   
 
   public static int currWidth, currHeight;
-
+  public static boolean showMoves = false;
   public static final int IMG_WIDTH = 7;
   public static final int IMG_HEIGHT = 7;
   public static void main(String[] args){
@@ -36,41 +36,43 @@ public class Game{
     System.out.println("Press 1 to start");
     String number = input.nextLine();
     if(Integer.parseInt(number) == 1){
-      System.out.print("\033[H\033[2J");
-      EnemyChar enemy1 = new EnemyChar();
+      //System.out.print("\033[H\033[2J");
       Pokemon charm = new Charmander();
       boolean game = true;
       while(game){
-        if(checkAlive(charm, enemy1)){
-          if(enemy1.getCurrHp() <= 0){
-            System.out.println("YOU WIN");
-            game = false;
-          }
-          else{
-            System.out.println("YOU LOSE");
-            game = false;
-          }
-        }
-        else{
-
-
-          displayBattleScreen(charm, enemy1);
-
-
-          System.out.println("Select an action: ");
-          String num = input.nextLine();
-          charm.atk(Integer.parseInt(num), enemy1);
-          enemy1.atk(charm);
-          currHeight = 0;
-          currWidth = 0;
-          status = new String[2][72];
-          System.out.print("\033[H\033[2J");
-        }
-        
+        EnemyChar enemy1 = new EnemyChar();
+        charm.heal();
+        //battle(charm, enemy1);
       }
     }
     //System.out.println(moves.getMove(73));
     //System.out.print("\033[H\033[2J");
+  }
+  /*
+  battle game loop 
+  */
+  public static void battle(Pokemon you, Enemy enemy){
+    Scanner input = new Scanner(System.in);
+    while(!checkAlive(you, (Pokemon) enemy)){
+          
+      displayBattleScreen(you, (Pokemon) enemy);
+      if(showMoves){
+        System.out.println("Input the move (number): ");
+        String move = input.nextLine();
+        you.atk(Integer.parseInt(move), (Pokemon) enemy);
+        enemy.atk(you);
+      }
+      else{
+        System.out.println("Enter the word of your action (all lowercase): ");
+        String action = input.nextLine();
+        act(action, you);
+      }
+
+      currHeight = 0;
+      currWidth = 0;
+      status = new String[2][72];
+      System.out.print("\033[H\033[2J");
+    }
   }
 
   /*
@@ -82,12 +84,16 @@ public class Game{
     System.out.println("\u001b[48;5;46m------------------------------------------------------------------------\u001b[0m");
     displayName(home, away);
     displayHp(home, away);
-    displayAction(home);
+    if(!showMoves)
+      displayAction(home);
+    else
+      displayMoves(home);
           
     display(status);
     display(action);
   }
 
+ 
   /*
   prints out the elements of all the possible "pixels" inside of any 2d array
   tldr simple print function for 2d arrs 
@@ -238,26 +244,56 @@ public class Game{
   /*
   when the player enters 1 during the action menu, we display the possible moves 
   */
-  public void displayMoves(Pokemon pokemon){
-    Pokemon clonePokemon = null;
-    try {
-      clonePokemon = (Pokemon) pokemon.clone();
-    } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
+  public static void displayMoves(Pokemon pokemon){
+    String move0, move1, move2, move3;
+    showMoves = true;
+    if(pokemon.displayMove(0) != null){
+      move0 = "1. " + pokemon.displayMove(0);
     }
-    Pokemon testingMoves = new Charmander();
-    if(clonePokemon.atk(0, testingMoves)){
+    else{
+      move0 = "1. NO MOVE";
+    }
 
+    if(pokemon.displayMove(1) != null){
+      move1 = "2. " + pokemon.displayMove(1);
     }
+    else{
+      move1 = "2. NO MOVE";
+    }
+
+    if(pokemon.displayMove(2) != null){
+      move2 = "3. " + pokemon.displayMove(2);
+    }
+    else{
+      move2 = "3. NO MOVE";
+    }
+
+    if(pokemon.displayMove(3) != null){
+      move3 = "4. " + pokemon.displayMove(3);
+    }
+    else{
+      move3 = "4. NO MOVE";
+    }
+
+    for(int i = 0; i < action[1].length; i++){
+      action[1][i] = " ";
+    }
+    for(int i = 0; i < action[2].length; i++){
+      action[2][i] = " ";
+    }
+    action[1][1] = move0;
+    action[1][4] = move1;
+    action[2][1] = move2;
+    action[2][4] = move3;
   }
 
 
   /*
   takes in the choices the player makes at the action menu of the battle 
   */
-  public void act(String action){
+  public static void act(String action, Pokemon pokemon){
     if(action.equals("fight")){
-
+      displayMoves(pokemon);
     }
     else if(action.equals("run")){
 
@@ -333,10 +369,21 @@ public class Game{
     }
     else if(opp.getCurrHp() <= 0){
       System.out.println("The opposing " + opp.getName() + " has fainted");
+      gainExp(you);
+      you.levelUp(you.getExp());
       return true;   
     }
     else{
       return false;
     }
+  }
+
+  /*
+  real pokemon logic is hard, i made a super simple exp gain method, really easy to understand
+  follows formula level * 5 
+  */
+  public static void gainExp(Pokemon home){
+    //home.setExp(home.getExp() + home.getLevel() * 5);
+    home.setExp(home.getExp() + 10000);
   }
 }
