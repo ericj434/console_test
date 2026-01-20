@@ -4,6 +4,8 @@ import java.io.*;
 import pokemon.*;
 
 public class Game{
+  public static String[][] world = new String[16][24];
+  public static String[][] currWorld = world.clone(); 
   public static String[][] battle = new String[8][24]; 
   public static String[][] status = new String[2][72];
   public static String[][] action = new String[4][24];
@@ -16,7 +18,8 @@ public class Game{
   public static final String DARK_GREEN_BOX = "\u001B[48;5;28m   \u001B[0m";
   public static final String GREY_BOX = "\u001b[48;5;239m   \u001b[0m";
   
-
+  public static boolean playerIn;
+  public static int pxcor, pycor;
   public static int currWidth, currHeight;
   public static boolean showMoves = false;
   public static final int IMG_WIDTH = 7;
@@ -36,18 +39,101 @@ public class Game{
     System.out.println("Press 1 to start");
     String number = input.nextLine();
     if(Integer.parseInt(number) == 1){
-      //System.out.print("\033[H\033[2J");
+      System.out.print("\033[H\033[2J");
       Pokemon charm = new Charmander();
       boolean game = true;
       while(game){
+        /* battle stuff
         EnemyChar enemy1 = new EnemyChar();
         charm.heal();
-        //battle(charm, enemy1);
+        battle(charm, enemy1);
+        */
+        importMap();
+        System.out.println(" __      __            .__       .___\r\n" + //
+                    "/  \\    /  \\___________|  |    __| _/\r\n" + //
+                    "\\   \\/\\/   /  _ \\_  __ \\  |   / __ | \r\n" + //
+                    " \\        (  <_> )  | \\/  |__/ /_/ | \r\n" + //
+                    "  \\__/\\  / \\____/|__|  |____/\\____ | \r\n" + //
+                    "       \\/                         \\/ ");
+        System.out.println("------------------------------------------------------------------------");
+        if(!playerIn){
+          spawnPlayer();
+          playerIn = true;
+        }
+        display(currWorld); 
+        System.out.println("Enter: ");
+        String move = input.nextLine();
+        movePlayer(move);
+        System.out.print("\033[H\033[2J");
+        
       }
     }
     //System.out.println(moves.getMove(73));
     //System.out.print("\033[H\033[2J");
   }
+
+  /*
+  moves the player 
+  */
+  public static void movePlayer(String dir){
+    if(dir.equals("1")){
+      if(currWorld[pycor - 1][pxcor] != null || !currWorld[pycor - 1][pxcor].equals(GREY_BOX)){
+        currWorld[pycor][pxcor] = world[pycor][pxcor];
+        currWorld[pycor - 1][pxcor] = RED_BOX;
+        pycor--;
+        System.out.println("sup");
+      }
+      else{
+        System.out.println("You can't go up!");
+      }
+    }
+    else if(dir.equals("a")){
+
+    }
+    else{
+      System.out.println("WOTNNTNTNTNN");
+    }
+  }
+
+  /*
+  spawns the player 
+  */
+  public static void spawnPlayer(){
+    currWorld[8][12] = RED_BOX;
+    pxcor = 12;
+    pycor = 8;
+  }
+  /*
+  importing mapppppp 
+  */
+  public static void importMap(){
+    File mapFile = new File("./imgs/map.txt");
+    int currRow = 0;
+    try{
+      Scanner scansMap = new Scanner(mapFile);
+      while(scansMap.hasNextLine()){
+        String line = scansMap.nextLine();
+        String[] lineSplit = line.split(" ");
+        for(int i = 0; i < world[currRow].length; i++){
+          world[currRow][i] = letterToBlock(lineSplit[i]);
+        }
+        currRow++;
+      }
+      scansMap.close();
+    }catch(FileNotFoundException e){
+      System.out.println("There's no file");
+    }
+  }
+
+
+
+
+  /*
+  CAUTION BELOW THIS POINT IS ALL MY WEIRD BATTLE RELATED STUFF + THE TRANSLATIONS FOR BLOCKS
+  REALLY BAD CODE  
+  */
+
+
   /*
   battle game loop 
   */
@@ -59,7 +145,7 @@ public class Game{
       if(showMoves){
         System.out.println("Input the move (number): ");
         String move = input.nextLine();
-        you.atk(Integer.parseInt(move), (Pokemon) enemy);
+        you.atk(Integer.parseInt(move) - 1, (Pokemon) enemy);
         enemy.atk(you);
       }
       else{
@@ -357,6 +443,9 @@ public class Game{
     }
     else if(letter.equals("g")){
       return DARK_GREEN_BOX;
+    }
+    else if(letter.equals("gr")){
+      return GREY_BOX;
     }
     return null;
   }
