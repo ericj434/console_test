@@ -257,7 +257,7 @@ public class Game{
     adventureMode = false;
     Pokemon enemyPokemon = (Pokemon) enemy;
     while(!checkAlive(you, enemyPokemon)){
-      System.out.print("\033[H\033[2J");
+      //System.out.print("\033[H\033[2J");
       displayBattleScreen(you, enemy);
       if(adventureMode == true){
         System.out.print("\033[H\033[2J");
@@ -290,7 +290,7 @@ public class Game{
       currHeight = 0;
       currWidth = 0;
       status = new String[2][72];
-      //System.out.print("\033[H\033[2J");
+      System.out.print("\033[H\033[2J");
     }
     showMoves = false;
     adventureMode = true;
